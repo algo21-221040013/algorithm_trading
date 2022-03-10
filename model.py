@@ -1,7 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.init as init
-import numpy as np
 from utils import cal_cos_similarity
 
 
@@ -22,8 +20,6 @@ class MLP(nn.Module):
         self.mlp.add_module('fc_out', nn.Linear(hidden_size, 1))
 
     def forward(self, x):
-        # feature
-        # [N, F]
         return self.mlp(x).squeeze()
 
 
