@@ -9,9 +9,9 @@ class DataLoader:
 
         self.df_feature = df_feature.values
         self.df_label = df_label.values
-	self.df_market_value = df_market_value
-	self.df_stock_index = df_stock_index
-	self.device = device
+        self.df_market_value = df_market_value
+        self.df_stock_index = df_stock_index
+        self.device = device
 
         if pin_memory:
             self.df_feature = torch.tensor(self.df_feature, dtype=torch.float, device=device)

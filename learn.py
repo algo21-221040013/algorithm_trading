@@ -193,6 +193,8 @@ def create_loaders(args):
     df_train, df_valid, df_test = dataset.prepare(["train", "valid", "test"], col_set=["feature", "label"],
                                                   data_key=DataHandlerLP.DK_L, )
     # import pickle5 as pickle
+    import pickle
+
     with open(args.market_value_path, "rb") as fh:
         df_market_value = pickle.load(fh)
     df_market_value = df_market_value / 1000000000
