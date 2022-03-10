@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 import torch.optim as optim
 import os
 import copy
@@ -11,10 +10,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import qlib
-# regiodatetimeG_CN, REG_US]
-from qlib.config import REG_US, REG_CN
+from qlib.config import REG_CN
 
-# provider_uri = "~/.qlib/qlib_data/us_data"  # target_dir
 provider_uri = "~/.qlib/qlib_data/cn_data"  # target_dir
 qlib.init(provider_uri=provider_uri, region=REG_CN)
 from qlib.data.dataset import DatasetH
@@ -83,7 +80,7 @@ def average_params(params_list):
     return new_params
 
 
-def loss_fn(pred, label, args):
+def loss_fn(pred, label):
     mask = ~torch.isnan(label)
     return mse(pred[mask], label[mask])
 
@@ -92,7 +89,6 @@ global_log_file = None
 
 
 def pprint(*args):
-    # print with UTC+8 time
     time = '[' + str(datetime.datetime.utcnow() +
                      datetime.timedelta(hours=8))[:19] + '] -'
     print(time, *args, flush=True)
@@ -106,7 +102,7 @@ def pprint(*args):
 global_step = -1
 
 
-def train_epoch(epoch, model, optimizer, train_loader, writer, args, stock2concept_matrix=None):
+def train_epoch(model, optimizer, train_loader, args, stock2concept_matrix=None):
     global global_step
 
     model.train()
@@ -149,8 +145,6 @@ def test_epoch(epoch, model, test_loader, writer, args, stock2concept_matrix=Non
     preds = pd.concat(preds, axis=0)
     precision, recall, ic, rank_ic = metric_fn(preds)
     scores = ic
-    # scores = (precision[3] + precision[5] + precision[10] + precision[30])/4.0
-    # scores = -1.0 * mse
 
     writer.add_scalar(prefix + '/Loss', np.mean(losses), epoch)
     writer.add_scalar(prefix + '/std(Loss)', np.std(losses), epoch)
@@ -198,10 +192,9 @@ def create_loaders(args):
 
     df_train, df_valid, df_test = dataset.prepare(["train", "valid", "test"], col_set=["feature", "label"],
                                                   data_key=DataHandlerLP.DK_L, )
-    import pickle5 as pickle
+    # import pickle5 as pickle
     with open(args.market_value_path, "rb") as fh:
         df_market_value = pickle.load(fh)
-    # df_market_value = pd.read_pickle(args.market_value_path)
     df_market_value = df_market_value / 1000000000
     stock_index = np.load(args.stock_index, allow_pickle=True).item()
 
