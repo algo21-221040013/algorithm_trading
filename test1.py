@@ -5,3 +5,4 @@ import numpy as np
 def banach_convergence_onsqrt(x, p):
     f = 1/2*(x + p/x)
     return f
+print(pd.__version__)
