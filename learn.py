@@ -12,7 +12,9 @@ from tqdm import tqdm
 import qlib
 from qlib.config import REG_CN
 
-provider_uri = "~/.qlib/qlib_data/cn_data"  # target_dir
+# provider_uri = "~/.qlib/qlib_data/cn_data"  # target_dir
+provider_uri = "D:\港中深\第二学期算法交易\cn_data"  # target_dir
+
 qlib.init(provider_uri=provider_uri, region=REG_CN)
 from qlib.data.dataset import DatasetH
 from qlib.data.dataset.handler import DataHandlerLP
