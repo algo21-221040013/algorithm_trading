@@ -1,1 +1,14 @@
-change from pycharm for the first time
+文章用了hist的网络结构，重点考虑了股票之间的概念相关性。将股票与concept的动态变化的联系作为因子特征传入网络进行预测。  
+网络结构为：1.先用一个两层的GRU作为每个股票序列特征（如开盘价等原始数据特征）的encoder，hidden_size都为128，且没有dropout层，取GRU的最后一个hiddenstate作为输出，将面板数据按照股票序列区分，输出为矩阵；  
+2.在事先定义的因子中使用图神经网络进行encoder --> 在现有因子中找到hidden因子（即文中所谓的concept联系） --> 前两种网络是用来寻找股票之间的共有信息因子，最后提取出每个股票独有的因子  
+3.使用以上获取的encoder过后的因子传入前馈网络来进行未来收益率预测。 
+在第一步获得embeddings之后，使用余弦相似度对股票和事先定义的因子（concept）的连接进行调整，调整过权重之后再传入全连接层leakyrelu激活之后输出为新的predefined concept因子；  
+使用输出的forecast predefined concept因子和backcast predefined concept因子作差得出下一步的初始化hidden concept因子， 同样使用余弦相似度计算并调整hidden concept因子和第一步得出的embedding的连接关系，预先定义n个
+hidden concept因子（数量与股票输相同），然后根据得出的相似度进行调整和重新连接，用全连接层leakyrelu激活后产生最终的hidden concept数据。  
+接着用attention机制计算不同concept对不同股票的重要程度。  最终将hist结果与torch库中几个已有的网络框架进行对比，如lstm，gru， transformer等  
+（注意，其中的backcast输出是由每一层initial的concept进行shared information那一步的全连接层接leakyrelu计算得出的）  
+改进方向：1. 文中对每一层的相似度计算都采用了等权重的余弦相似度进行计算，实际在处理时序特征序列过程中可以采用指数加权的变化权重进行计算相似度，更多考
+虑近期的特征相似度，且在每一层计算相似度时采用相同的权重，将权重作为一个共享的参数进行训练；2.训练集从2007-2014，中间市场风格发生了较大的波动，作为整体
+进行训练可能造成较大波动，可以 将训练集拆分为两个不同的时间段最终将参数进行加权。
+
+数据来源qlib。
